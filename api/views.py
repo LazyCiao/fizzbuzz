@@ -48,3 +48,22 @@ class FizzBuzzView(APIView):
                 result.append(str(i))
 
         return Response(result)
+    
+class FizzBuzzStatisticsView(APIView):
+    def get(self, request, format=None):
+        # Find the most frequent request
+        most_frequent_request = FizzBuzzRequest.objects.order_by('-hits').first()
+        
+        if most_frequent_request is None:
+            return Response({"error": "No requests made yet."}, status=status.HTTP_404_NOT_FOUND)
+
+        response_data = {
+            "int1": most_frequent_request.int1,
+            "int2": most_frequent_request.int2,
+            "limit": most_frequent_request.limit,
+            "str1": most_frequent_request.str1,
+            "str2": most_frequent_request.str2,
+            "hits": most_frequent_request.hits
+        }
+
+        return Response(response_data)
