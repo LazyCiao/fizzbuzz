@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from .models import FizzBuzzRequest
 
 class FizzBuzzView(APIView):
     def get(self, request, format=None):
@@ -24,6 +25,15 @@ class FizzBuzzView(APIView):
         except ValueError:
             return Response({"error": "Invalid input, integers expected for int1, int2, and limit."},
                             status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update or create the FizzBuzzRequest object
+        obj, created = FizzBuzzRequest.objects.get_or_create(
+            int1=int1, int2=int2, limit=limit, str1=str1, str2=str2,
+            defaults={'hits': 1}
+        )
+        if not created:
+            obj.hits += 1
+            obj.save()
 
         # Fizz-Buzz logic
         result = []
